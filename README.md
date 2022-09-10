@@ -12,8 +12,8 @@ A script for generating a one line summary of the system status.
 
 ## Installation
 
-* Recommended installation location: `/usr/local/opt/stasys`
-* Link the stasys executable into `/usr/local/bin/`
+* Recommended installation location: `/opt/`
+* Link the stasys executable into `/bin/`
 
 ## Usage
 
