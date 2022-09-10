@@ -188,7 +188,7 @@ set -l swap_info (free -m | grep Swap | string split " " | string join -n " " | 
 set -l swap_usage
 # Calculate the usage as a percentage.
 # But first, check that swap space is set up.
-if test -n "$swap_info[2]" 
+if test "$swap_info[2]" -ne 0 
     set swap_usage (echo (echo "100 * $swap_info[3]" | bc) / $swap_info[2] | bc)
 end
 
@@ -197,7 +197,7 @@ end
 
 set -l output "CPU:   $cpu_freqs_average   $cpu_usage%   $cpu_temp°C"
 set output "$output   |   RAM:   $ram_usage%"
-if test -n "$swap_info[2]"
+if test -n "$swap_usage"
     set output "$output   |   Swap: $swap_usage%"
 end
 set output "$output   |   ↑$dtx_dt_Mbps   ↓$drx_dt_Mbps"
