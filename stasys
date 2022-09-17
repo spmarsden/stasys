@@ -159,9 +159,9 @@ def main():
     # Format the output string.
     cpu_freq_str = ""
     if freq_MHz > 1e3:
-        cpu_freq_str = f"{freq_MHz/1e3:.2} GHz"
+        cpu_freq_str = f"{freq_MHz/1e3:.1f} GHz"
     else:
-        cpu_freq_str = f"{freq_MHz:.2} MHz"
+        cpu_freq_str = f"{round(freq_MHz)} MHz"
 
     ### CPU Temperature.
     cpu_temps = [line[2] for line in sensors_stdout if len(line)>0 and line[0]=="Core"]
