@@ -8,6 +8,7 @@
 #              intended to be embedded in the GNOME topbar.
 #
 # Dependencies: python3
+#               numpy
 #               ip
 #               sensors
 #               vmstat

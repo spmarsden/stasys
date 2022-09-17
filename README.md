@@ -5,6 +5,8 @@ A script for generating a one line summary of the system status.
 ## Dependencies
 
 * fish
+* python3
+* numpy
 * ip
 * sensors
 * vmstat
