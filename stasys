@@ -199,12 +199,13 @@ def main():
 
     ### Swap
     swap_index = [line[0] for line in free_stdout].index("Swap:")
-    # Get the swap values.
-    swap_total = int(free_stdout[swap_index][total_index])
-    swap_used  = int(free_stdout[swap_index][used_index ])
-    # Get the RAM used percentage.
-    swap_percentage = round(100 * swap_used/swap_total)
-
+    if swap_index < len(free_stdout):
+        # Get the swap values.
+        swap_total = int(free_stdout[swap_index][total_index])
+        swap_used  = int(free_stdout[swap_index][used_index ])
+        # Get the RAM used percentage.
+        if swap_total > 0:
+            swap_percentage = round(100 * swap_used/swap_total)
 
     ## Network Usage 2/2 #######################################################
 
@@ -229,8 +230,9 @@ def main():
     output += f"CPU:   {cpu_freq_str}   {cpu_percentage}%   {cpu_temps_average}°C"
     output += separator
     output += f"RAM: {ram_percentage}%"
-    output += separator
-    output += f"Swap: {swap_percentage}%"
+    if swap_total > 0:
+        output += separator
+        output += f"Swap: {swap_percentage}%"
     output += separator
     output += f"↑{dtx_dt} Mb/s   ↓{drx_dt} Mb/s"
 
