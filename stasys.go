@@ -122,7 +122,7 @@ func cpu_freq_MHz() float64 {
 
 func main() {
 
-	// General ////////////////////////////////////////////////////////////////
+	// General /////////////////////////////////////////////////////////////////
 
 	// Get the sensors output. This will be used for temperatures and fan speed.
 	// Define the command.
@@ -136,15 +136,12 @@ func main() {
 	// Split the output.
 	sensors := stdout2fields(sensors_stdout)
 
-	// Network Usage 1/2 //////////////////////////////////////////////////////
+	// Network Usage 1/2 ///////////////////////////////////////////////////////
 
 	// Record the time and cumulative network usage.
-	//   0: unix timestamp.
-	//   1: RX in Mb
-	//   2: TX in Mb
-	network_t_start, network_rx_start, network_tx_start := t_rx_tx_Mb()
+	network_t_start_s, network_rx_start_Mb, network_tx_start_Mb := t_rx_tx_Mb()
 
-	// CPU ////////////////////////////////////////////////////////////////////
+	// CPU /////////////////////////////////////////////////////////////////////
 
 	// CPU Usage.
 	// Run vmstat to get the idle percentage.
@@ -154,8 +151,7 @@ func main() {
 	var vmstat_stdout bytes.Buffer
 	cmd_vmstat.Stdout = &vmstat_stdout
 	// Run the command.
-	_ = cmd_vmstat.Run()
-	// 6 ms.
+	_ = cmd_vmstat.Run() // 6 ms.
 
 	// Split output into lines.
 	vmstat_lines := strings.Split(vmstat_stdout.String(), "\n")
@@ -200,32 +196,99 @@ func main() {
 	}
 	cpu_temp /= float64(n_cpu)
 
-	// Fan Speed //////////////////////////////////////////////////////////////
+	// Fan Speed ///////////////////////////////////////////////////////////////
+	// for _, line := range sensors {
+	// 	if len(line) > 0 && line[0] ==
+	// }
 
-	// Memory Usage ///////////////////////////////////////////////////////////
+	// Memory Usage ////////////////////////////////////////////////////////////
 
-	// Network Usage 2/2 //////////////////////////////////////////////////////
+	// Run free to get the memory stats.
+	// Define the command.
+	cmd_free := exec.Command("free", "-m")
+	// Add a stream for the stdout.
+	var free_stdout bytes.Buffer
+	cmd_free.Stdout = &free_stdout
+	// Run the command.
+	_ = cmd_free.Run() // 6 ms.
+
+	// Split the output.
+	free := stdout2fields(free_stdout)
+
+	// Find the index of the total and free columns.
+	used_index := -1
+	total_index := -1
+	for i, entry := range free[0] {
+		if entry == "total" {
+			total_index = i + 1
+		} else if entry == "used" {
+			used_index = i + 1
+		}
+		if used_index > -1 && total_index > -1 {
+			break
+		}
+	}
+
+	// Find the index of the memory entry.
+	mem_index := -1
+	swap_index := -1
+	for i, line := range free {
+		if len(line) == 0 {
+			continue
+		}
+		if line[0] == "Mem:" {
+			mem_index = i
+		} else if line[0] == "Swap:" {
+			swap_index = i
+		}
+	}
+
+	mem_used, _ := strconv.ParseFloat(free[mem_index][used_index], 64)
+	mem_total, _ := strconv.ParseFloat(free[mem_index][total_index], 64)
+	mem_percentage := 0.
+	if mem_total > 0 {
+		mem_percentage = 100. * mem_used / mem_total
+	}
+
+	swap_percentage := -1.
+	if swap_index > -1 {
+		swap_used, _ := strconv.ParseFloat(free[swap_index][used_index], 64)
+		swap_total, _ := strconv.ParseFloat(free[swap_index][total_index], 64)
+		if swap_total > 0 {
+			swap_percentage = 100. * swap_used / swap_total
+		}
+	}
+
+	// Network Usage 2/2 ///////////////////////////////////////////////////////
 
 	// Record the time and cumulative network usage.
-	//   0: unix timestamp.
-	//   1: RX in Mb
-	//   2: TX in Mb
-	network_t_stop, network_rx_stop, network_tx_stop := t_rx_tx_Mb()
+	network_t_stop_s, network_rx_stop_Mb, network_tx_stop_Mb := t_rx_tx_Mb()
 
 	// Calculate the transfer rate.
-	network_t_delta := network_t_stop - network_t_start
-	network_rx_delta := network_rx_stop - network_rx_start
-	network_tx_delta := network_tx_stop - network_tx_start
-	drx_dt := network_rx_delta / network_t_delta
-	dtx_dt := network_tx_delta / network_t_delta
+	network_t_delta_s := network_t_stop_s - network_t_start_s
+	network_rx_delta_Mb := network_rx_stop_Mb - network_rx_start_Mb
+	network_tx_delta_Mb := network_tx_stop_Mb - network_tx_start_Mb
+	drx_dt := network_rx_delta_Mb / network_t_delta_s
+	dtx_dt := network_tx_delta_Mb / network_t_delta_s
 
-	// Output /////////////////////////////////////////////////////////////////
+	// Output //////////////////////////////////////////////////////////////////
 
-	fmt.Printf("CPU: %s %d%% %.0f°C | RAM: %% | ↑%.1f Mb/s ↓%.1f Mb/s\n",
+	divider := " | "
+
+	output := ""
+	output += fmt.Sprintf("CPU: %s %d%% %.0f°C",
 		cpu_freq_str,
 		cpu_percentage,
-		cpu_temp,
-		dtx_dt,
-		drx_dt)
+		cpu_temp)
+	output += divider
+	output += fmt.Sprintf("RAM: %.0f%%", mem_percentage)
+	if swap_percentage > -1 {
+		output += divider
+		output += fmt.Sprintf("Swap: %.0f%%", swap_percentage)
+	}
+	output += divider
+	output += fmt.Sprintf("↑%.1f Mb/s ↓%.1f Mb/s", dtx_dt, drx_dt)
+
+	fmt.Println(output)
 
 }
