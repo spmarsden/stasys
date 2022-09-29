@@ -273,10 +273,10 @@ func main() {
 
 	// Output //////////////////////////////////////////////////////////////////
 
-	divider := " | "
+	divider := "   |   "
 
 	output := ""
-	output += fmt.Sprintf("CPU: %s %d%% %.0f°C",
+	output += fmt.Sprintf("CPU: %s  %d%%  %.0f°C",
 		cpu_freq_str,
 		cpu_percentage,
 		cpu_temp)
@@ -287,7 +287,7 @@ func main() {
 		output += fmt.Sprintf("Swap: %.0f%%", swap_percentage)
 	}
 	output += divider
-	output += fmt.Sprintf("↑%.1f Mb/s ↓%.1f Mb/s", dtx_dt, drx_dt)
+	output += fmt.Sprintf("↑%.1f Mb/s  ↓%.1f Mb/s", dtx_dt, drx_dt)
 
 	fmt.Println(output)
 
