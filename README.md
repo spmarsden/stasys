@@ -4,9 +4,7 @@ A script for generating a one line summary of the system status.
 
 ## Dependencies
 
-* fish
-* python3
-* numpy
+* go
 * ip
 * sensors
 * vmstat
@@ -14,8 +12,9 @@ A script for generating a one line summary of the system status.
 
 ## Installation
 
-* Recommended installation location: `/opt/`
-* Link the stasys executable into `/bin/`
+* Recommended installation location: `/opt/` or `/usr/local/opt`
+* To compile the binary and link it into `/bin/` or `/usr/local/bin`:
+    * `sudo ./install.sh`
 
 ## Usage
 
@@ -23,4 +22,4 @@ A script for generating a one line summary of the system status.
 
 ## Example Output 
 
-`CPU:   2.84 GHz   17%   56°C   |   RAM:   45%   |   Swap: 1%   |   ↑0.6 Mb/s   ↓31.0 Mb/s`
+`CPU: 1.3 GHz  46%  51°C   |   RAM: 24%   |   ↑0.6 Mb/s  ↓31.0 Mb/s`
