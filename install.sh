@@ -17,7 +17,7 @@ fi
 echo "Building stasys."
 go build -o bin/ src/stasys.go
 
-echo "Linking executables."
+echo "Linking executable."
 # Check that a binary directory can be found.
 if [ -d "../../bin" ]
 then
