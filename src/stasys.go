@@ -197,10 +197,22 @@ func main() {
 	cpu_temp /= float64(n_cpu)
 
 	// Fan Speed ///////////////////////////////////////////////////////////////
-	// for _, line := range sensors {
-	// 	if len(line) > 0 && line[0] ==
-	// }
 
+	fan_speed := 0
+	n_fans := 0
+	for _, line := range sensors {
+		if len(line) == 0 {
+			continue
+		}
+		if strings.HasPrefix(line[0], "fan") {
+			rpm, _ := strconv.Atoi(line[1])
+			fan_speed += rpm
+			n_fans++
+		}
+	}
+	if n_fans>0 {
+		fan_speed /= n_fans
+	}
 	// Memory Usage ////////////////////////////////////////////////////////////
 
 	// Run free to get the memory stats.
@@ -280,6 +292,10 @@ func main() {
 		cpu_freq_str,
 		cpu_percentage,
 		cpu_temp)
+	if n_fans > 0 {
+		output += divider
+		output += fmt.Sprintf("Fan: %d RPM", fan_speed)
+	}
 	output += divider
 	output += fmt.Sprintf("RAM: %.0f%%", mem_percentage)
 	if swap_percentage > -1 {
