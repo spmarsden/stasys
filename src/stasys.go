@@ -281,10 +281,10 @@ func main() {
 	// tail -n 1        - Take the largest disk.
 	// awk '{print $X}' - 2: size, 3: used, 4: available, 5: use%
 	commands := []string{
-		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $2}'",
-		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $3}'",
-		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $4}'",
-		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $5}'",
+		"df -h ~ | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $2}'",
+		"df -h ~ | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $3}'",
+		"df -h ~ | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $4}'",
+		"df -h ~ | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $5}'",
 	}
 	df_output := []string{}
 	for _, command := range commands {
