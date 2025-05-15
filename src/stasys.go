@@ -210,7 +210,7 @@ func main() {
 			n_fans++
 		}
 	}
-	if n_fans>0 {
+	if n_fans > 0 {
 		fan_speed /= n_fans
 	}
 	// Memory Usage ////////////////////////////////////////////////////////////
@@ -281,10 +281,10 @@ func main() {
 	// tail -n 1        - Take the largest disk.
 	// awk '{print $X}' - 2: size, 3: used, 4: available, 5: use%
 	commands := []string{
-		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $2}'",
-		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $3}'",
-		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $4}'",
-		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $5}'",
+		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $2}'",
+		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $3}'",
+		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $4}'",
+		"df -h | tail -n +2 | sort -k2 -h | grep ^/dev/ | tail -n 1 | awk '{print $5}'",
 	}
 	df_output := []string{}
 	for _, command := range commands {
@@ -300,7 +300,7 @@ func main() {
 	}
 	// df_size  := strings.TrimSpace(df_output[0])[:len(df_output[0])-2]
 	// df_used  := strings.TrimSpace(df_output[1])[:len(df_output[1])-2]
-	df_free  := strings.TrimSpace(df_output[2])[:len(df_output[2])-2]
+	df_free := strings.TrimSpace(df_output[2])[:len(df_output[2])-2]
 	df_usage := strings.TrimSpace(df_output[3])
 
 	// Network Usage 2/2 ///////////////////////////////////////////////////////
