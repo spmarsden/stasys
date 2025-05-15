@@ -271,6 +271,38 @@ func main() {
 		}
 	}
 
+	// Disk Usage //////////////////////////////////////////////////////////////
+
+	// Run df to get the disk usage.
+	// Define the command.
+	// df -h            - List all filesystems.
+	// tail -n +2       - Skip remove the header.
+	// sort -k2 -h      - Sort by the disk size.
+	// tail -n 1        - Take the largest disk.
+	// awk '{print $X}' - 2: size, 3: used, 4: available, 5: use%
+	commands := []string{
+		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $2}'",
+		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $3}'",
+		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $4}'",
+		"df -h | tail -n +2 | sort -k2 -h | tail -n 1 | awk '{print $5}'",
+	}
+	df_output := []string{}
+	for _, command := range commands {
+		// Create a new command.
+		cmd := exec.Command("/bin/bash", "-c", command)
+		// Create the output buffer.
+		var df_stdout bytes.Buffer
+		cmd.Stdout = &df_stdout
+		// Run the command.
+		_ = cmd.Run()
+		// Store the output.
+		df_output = append(df_output, df_stdout.String())
+	}
+	// df_size  := strings.TrimSpace(df_output[0])[:len(df_output[0])-2]
+	// df_used  := strings.TrimSpace(df_output[1])[:len(df_output[1])-2]
+	df_free  := strings.TrimSpace(df_output[2])[:len(df_output[2])-2]
+	df_usage := strings.TrimSpace(df_output[3])
+
 	// Network Usage 2/2 ///////////////////////////////////////////////////////
 
 	// Record the time and cumulative network usage.
@@ -302,6 +334,8 @@ func main() {
 		output += divider
 		output += fmt.Sprintf("Swap: %.0f%%", swap_percentage)
 	}
+	output += divider
+	output += fmt.Sprintf("Disk: %s (%s GB)", df_usage, df_free)
 	output += divider
 	output += fmt.Sprintf("↑%.1f Mb/s  ↓%.1f Mb/s", dtx_dt, drx_dt)
 
